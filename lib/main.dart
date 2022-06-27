@@ -87,18 +87,28 @@ class _MyAppState extends State<MyApp> {
                   if (users[i].username == _username.text &&
                       users[i].password == _password.text) {
                     success = true;
-                    // Navigator.push(context,
-                    //     MaterialPageRoute(builder: ((context) {
-                    //   return const Register();
-                    // })));
                     break;
                   }
                 }
 
                 if (success) {
                   print("Login Success!");
+                  _username.text="";
+                  _password.text="";
+
+                  //Check Admin (if admin == 1)
+                  //Buat Halaman Customer + Admin
+
+                  // Navigator.push(context,
+                  //     MaterialPageRoute(builder: ((context) {
+                  //   return const HalamanX();
+                  // })));
+
                 } else {
                   print("Login Fail!");
+                  _password.text="";
+
+                  //Dialog (Username / Password salah!)
                 }
               },
               style: ElevatedButton.styleFrom(
@@ -127,8 +137,15 @@ class _MyAppState extends State<MyApp> {
                           saldo: "0",
                           username: _username.text));
                   print("Register Success!");
+                  _username.text="";
+                  _password.text="";
+                  
+                  //Dialog (Berhasil mendaftar user!)
                 } else {
                   print("User already exist");
+                  _password.text="";
+
+                  //Dialog (Username sudah ada!)
                 }
               },
               style: ElevatedButton.styleFrom(
