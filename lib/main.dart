@@ -1,3 +1,5 @@
+import 'package:ambw_proyek/admin_main.dart';
+import 'package:ambw_proyek/customer_main.dart';
 import 'package:ambw_proyek/database_api.dart';
 import 'package:ambw_proyek/dataclass.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -83,30 +85,39 @@ class _MyAppState extends State<MyApp> {
             ElevatedButton(
               onPressed: () {
                 bool success = false;
+                bool admin = false;
+                String username = "";
                 for (int i = 0; i < users.length; i++) {
                   if (users[i].username == _username.text &&
                       users[i].password == _password.text) {
+                    username = users[i].username;
                     success = true;
+                    if (users[i].admin == "1") {
+                      admin = true;
+                    }
                     break;
                   }
                 }
 
                 if (success) {
                   print("Login Success!");
-                  _username.text="";
-                  _password.text="";
+                  _username.text = "";
+                  _password.text = "";
 
-                  //Check Admin (if admin == 1)
-                  //Buat Halaman Customer + Admin
-
-                  // Navigator.push(context,
-                  //     MaterialPageRoute(builder: ((context) {
-                  //   return const HalamanX();
-                  // })));
-
+                  if (admin) {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: ((context) {
+                      return adminMain(username: username);
+                    })));
+                  } else {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: ((context) {
+                      return customerMain(username: username);
+                    })));
+                  }
                 } else {
                   print("Login Fail!");
-                  _password.text="";
+                  _password.text = "";
 
                   //Dialog (Username / Password salah!)
                 }
@@ -137,13 +148,13 @@ class _MyAppState extends State<MyApp> {
                           saldo: "0",
                           username: _username.text));
                   print("Register Success!");
-                  _username.text="";
-                  _password.text="";
-                  
+                  _username.text = "";
+                  _password.text = "";
+
                   //Dialog (Berhasil mendaftar user!)
                 } else {
                   print("User already exist");
-                  _password.text="";
+                  _password.text = "";
 
                   //Dialog (Username sudah ada!)
                 }

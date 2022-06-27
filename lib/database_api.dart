@@ -2,11 +2,16 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ambw_proyek/dataclass.dart';
 
 CollectionReference userTable = FirebaseFirestore.instance.collection("Users");
+CollectionReference productTable = FirebaseFirestore.instance.collection("Items");
 
 class Database {
   //Users
   static Stream<QuerySnapshot<Object?>> getUsers() {
     return userTable.snapshots();
+  }
+
+  static Stream<QuerySnapshot<Object?>> getUser(String username) {
+    return userTable.where("Username",isEqualTo: username).snapshots();
   }
 
   static Future<void> addUser({required Users newUser}) async {
@@ -31,5 +36,10 @@ class Database {
         .delete()
         .whenComplete(() => print("User deleted!"))
         .catchError((e) => print(e));
+  }
+
+  //Products
+  static Stream<QuerySnapshot<Object?>> getAllProducts() {
+    return productTable.snapshots();
   }
 }
