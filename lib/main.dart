@@ -45,8 +45,9 @@ class _MyAppState extends State<MyApp> {
             StreamBuilder<QuerySnapshot>(
               stream: Database.getUsers(),
               builder: (context, snapshots) {
+                print("Getting all users..");
                 if (snapshots.hasError) {
-                  print("Error getting all users..");
+                  print("Error getting all users!");
                 } else if (snapshots.hasData && snapshots.data != null) {
                   users.clear();
                   for (int i = 0; i < snapshots.data!.docs.length; i++) {
@@ -81,16 +82,23 @@ class _MyAppState extends State<MyApp> {
             ),
             ElevatedButton(
               onPressed: () {
+                bool success = false;
                 for (int i = 0; i < users.length; i++) {
                   if (users[i].username == _username.text &&
                       users[i].password == _password.text) {
-                    print("Login Success!");
+                    success = true;
                     // Navigator.push(context,
                     //     MaterialPageRoute(builder: ((context) {
                     //   return const Register();
                     // })));
                     break;
                   }
+                }
+
+                if (success) {
+                  print("Login Success!");
+                } else {
+                  print("Login Fail!");
                 }
               },
               style: ElevatedButton.styleFrom(
@@ -105,14 +113,19 @@ class _MyAppState extends State<MyApp> {
               onPressed: () {
                 bool userExist = false;
                 for (int i = 0; i < users.length; i++) {
-                  if (users[i].username == _username.text &&
-                      users[i].password == _password.text) {
+                  if (users[i].username == _username.text) {
                     userExist = true;
                     break;
                   }
                 }
 
                 if (!userExist) {
+                  Database.addUser(
+                      newUser: Users(
+                          admin: "0",
+                          password: _password.text,
+                          saldo: "0",
+                          username: _username.text));
                   print("Register Success!");
                 } else {
                   print("User already exist");
