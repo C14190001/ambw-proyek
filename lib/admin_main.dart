@@ -1,4 +1,6 @@
+import 'package:ambw_proyek/admin_daftarReview.dart';
 import 'package:ambw_proyek/database_api.dart';
+import 'package:ambw_proyek/dataclass.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
@@ -11,6 +13,14 @@ class adminMain extends StatefulWidget {
 }
 
 class _adminMainState extends State<adminMain> {
+  int testProductTambah = 0;
+
+  void snackbarFromDialog(String Message) {
+    Navigator.of(context).pop();
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(Message)));
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -39,6 +49,28 @@ class _adminMainState extends State<adminMain> {
               const SizedBox(
                 height: 20,
               ),
+              ElevatedButton(
+                  onPressed: () {
+                    testProductTambah++;
+
+                    Database.addProduct(
+                        newProduct: Product(
+                            Descriptions: "Test Product ${testProductTambah}",
+                            Name: (testProductTambah).toString(),
+                            PictureURL:
+                                "https://12college.files.wordpress.com/2016/05/test-clip-art-cpa-school-test.png",
+                            Price: "1",
+                            Stock: "10"));
+
+                    //Halaman Tambah produk
+                  },
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: const Size.fromHeight(40),
+                  ),
+                  child: const Text("Tambah Produk")),
+              const SizedBox(
+                height: 20,
+              ),
               Expanded(
                   child: StreamBuilder<QuerySnapshot>(
                 stream: Database.getAllProducts(),
@@ -46,6 +78,8 @@ class _adminMainState extends State<adminMain> {
                   if (snapshots.hasError) {
                     return const Text("Gagal ambil data semua produk!");
                   } else if (snapshots.hasData) {
+                    testProductTambah = snapshots.data!.docs.length;
+
                     return ListView.separated(
                         itemBuilder: ((context, index) {
                           DocumentSnapshot dsData = snapshots.data!.docs[index];
@@ -54,7 +88,9 @@ class _adminMainState extends State<adminMain> {
                             title: Row(
                               children: [
                                 Expanded(child: Text(dsData['Name'])),
-                                Text("Rp. " + dsData['Price'], style: const TextStyle(fontWeight: FontWeight.bold))
+                                Text("Rp. " + dsData['Price'],
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.bold))
                               ],
                             ),
                             subtitle: Row(
@@ -65,13 +101,17 @@ class _adminMainState extends State<adminMain> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(dsData['Descriptions']),
-                                      Text("Stock: " + dsData['Stock'], style: const TextStyle(fontWeight: FontWeight.bold),)
+                                      Text(
+                                        "Stock: " + dsData['Stock'],
+                                        style: const TextStyle(
+                                            fontWeight: FontWeight.bold),
+                                      )
                                     ],
                                   ),
                                 ),
                                 ElevatedButton(
                                     onPressed: () {
-                                      //Edit Produk
+                                      //Halaman Edit Produk
                                     },
                                     child: const Icon(Icons.edit)),
                                 const SizedBox(
@@ -79,7 +119,34 @@ class _adminMainState extends State<adminMain> {
                                 ),
                                 ElevatedButton(
                                     onPressed: () {
-                                      //Hapus Produk (Pake dialod are you sure)
+                                      showDialog(
+                                          context: context,
+                                          builder: (context) => AlertDialog(
+                                                title:
+                                                    const Text("Hapus Produk"),
+                                                content: Text(dsData['Name']),
+                                                actions: [
+                                                  TextButton(
+                                                      onPressed: () {
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                      },
+                                                      child:
+                                                          const Text("Batal")),
+                                                  TextButton(
+                                                      onPressed: () {
+                                                        Database.deleteProduct(
+                                                            productName:
+                                                                dsData['Name']);
+                                                        setState(() {});
+                                                        snackbarFromDialog(
+                                                            "Produk Dihapus!");
+                                                      },
+                                                      child:
+                                                          const Text("Hapus"))
+                                                ],
+                                              ),
+                                          barrierDismissible: false);
                                     },
                                     child: const Text("X"))
                               ],
@@ -104,7 +171,9 @@ class _adminMainState extends State<adminMain> {
                 height: 20,
               ),
               ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    //Halaman Daftar Transaksi
+                  },
                   style: ElevatedButton.styleFrom(
                     minimumSize: const Size.fromHeight(40),
                   ),
@@ -113,7 +182,12 @@ class _adminMainState extends State<adminMain> {
                 height: 20,
               ),
               ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: ((context) {
+                      return adminReview();
+                    })));
+                  },
                   style: ElevatedButton.styleFrom(
                     minimumSize: const Size.fromHeight(40),
                   ),

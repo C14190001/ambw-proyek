@@ -66,22 +66,24 @@ class _MyAppState extends State<MyApp> {
               },
             ),
             //-----------------------------------------
+            const Text("Selamat Datang di SIKLUS!", style: TextStyle(fontStyle: FontStyle.italic, fontSize: 20),),
+            const SizedBox(
+              height: 50,
+            ),
             TextField(
               controller: _username,
               decoration: const InputDecoration(
                   labelText: "Username", border: OutlineInputBorder()),
             ),
             const SizedBox(
-              height: 20,
+              height: 50,
             ),
             TextField(
               controller: _password,
               decoration: const InputDecoration(
                   labelText: "Password", border: OutlineInputBorder()),
             ),
-            const SizedBox(
-              height: 20,
-            ),
+            const Expanded(child: SizedBox()),
             ElevatedButton(
               onPressed: () {
                 bool success = false;
@@ -118,8 +120,20 @@ class _MyAppState extends State<MyApp> {
                 } else {
                   print("Login Fail!");
                   _password.text = "";
-
-                  //Dialog (Username / Password salah!)
+                  showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                            title: const Text("Login gagal"),
+                            content: const Text("Username / Password salah!"),
+                            actions: [
+                              TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: const Text("OK"))
+                            ],
+                          ),
+                      barrierDismissible: false);
                 }
               },
               style: ElevatedButton.styleFrom(
@@ -132,31 +146,76 @@ class _MyAppState extends State<MyApp> {
             ),
             ElevatedButton(
               onPressed: () {
-                bool userExist = false;
-                for (int i = 0; i < users.length; i++) {
-                  if (users[i].username == _username.text) {
-                    userExist = true;
-                    break;
+                if (_username.text.isNotEmpty && _password.text.isNotEmpty) {
+                  bool userExist = false;
+                  for (int i = 0; i < users.length; i++) {
+                    if (users[i].username == _username.text) {
+                      userExist = true;
+                      break;
+                    }
                   }
-                }
 
-                if (!userExist) {
-                  Database.addUser(
-                      newUser: Users(
-                          admin: "0",
-                          password: _password.text,
-                          saldo: "0",
-                          username: _username.text));
-                  print("Register Success!");
-                  _username.text = "";
-                  _password.text = "";
+                  if (!userExist) {
+                    Database.addUser(
+                        newUser: Users(
+                            admin: "0",
+                            password: _password.text,
+                            saldo: "0",
+                            username: _username.text));
+                    print("Register Success!");
+                    _username.text = "";
+                    _password.text = "";
 
-                  //Dialog (Berhasil mendaftar user!)
+                    showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                              title: const Text("Register berhasil"),
+                              content: const Text(
+                                  "Berhasil mendaftarkan pembeli baru!"),
+                              actions: [
+                                TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: const Text("OK"))
+                              ],
+                            ),
+                        barrierDismissible: false);
+                  } else {
+                    print("User already exist");
+                    _password.text = "";
+
+                    showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                              title: const Text("Register gagal"),
+                              content: const Text("Username sudah dipakai!"),
+                              actions: [
+                                TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: const Text("OK"))
+                              ],
+                            ),
+                        barrierDismissible: false);
+                  }
                 } else {
-                  print("User already exist");
-                  _password.text = "";
-
-                  //Dialog (Username sudah ada!)
+                  showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                            title: const Text("Register gagal"),
+                            content:
+                                const Text("Username / Password masih kosong"),
+                            actions: [
+                              TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: const Text("OK"))
+                            ],
+                          ),
+                      barrierDismissible: false);
                 }
               },
               style: ElevatedButton.styleFrom(

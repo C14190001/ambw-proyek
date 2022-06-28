@@ -61,3 +61,45 @@ class Product {
         Stock: json['Stock']);
   }
 }
+
+class Cart {
+  final String Name;
+  final String Username;
+  final String Price;
+  final String Stock;
+
+  Cart(
+      {required this.Name,
+      required this.Username,
+      required this.Price,
+      required this.Stock});
+
+  Map<String, dynamic> toJson() {
+    return {"Name": Name, "Username": Username, "Price": Price, "Stock": Stock};
+  }
+
+  factory Cart.fromJson(Map<String, dynamic> json) {
+    return Cart(
+        Name: json['Name'],
+        Username: json['Username'],
+        Price: json['Price'],
+        Stock: json['Stock']);
+  }
+}
+
+class Reviews {
+  final String Review;
+  final String Username;
+  Reviews({
+    required this.Review,
+    required this.Username,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {"Review": Review, "Username": Username};
+  }
+
+  factory Reviews.fromJson(Map<String, dynamic> json) {
+    return Reviews(Review: json['Review'], Username: json['Username']);
+  }
+}

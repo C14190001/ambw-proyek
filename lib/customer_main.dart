@@ -1,3 +1,4 @@
+import 'package:ambw_proyek/customer_review.dart';
 import 'package:ambw_proyek/database_api.dart';
 import 'package:ambw_proyek/dataclass.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -14,6 +15,7 @@ class customerMain extends StatefulWidget {
 class _customerMainState extends State<customerMain> {
   late Users currentUser;
   String saldo = "...";
+  List<Cart> currentCart = [];
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +31,29 @@ class _customerMainState extends State<customerMain> {
             children: [
               Row(
                 children: [
+                  //Ambil data cart ----------------
+                  StreamBuilder<QuerySnapshot>(
+                    stream: Database.getCart(widget.username),
+                    builder: (context, snapshots) {
+                      print("Getting cart from ${widget.username}..");
+                      if (snapshots.hasError) {
+                        print(
+                            "Error getting card from user ${widget.username}!");
+                      } else if (snapshots.hasData && snapshots.data != null) {
+                        currentCart.clear();
+                        for (int i = 0; i < snapshots.data!.docs.length; i++) {
+                          DocumentSnapshot dsData = snapshots.data!.docs[i];
+                          currentCart.add(Cart(
+                              Name: dsData['Name'],
+                              Username: dsData['Username'],
+                              Price: dsData['Price'],
+                              Stock: dsData['Stock']));
+                        }
+                      }
+                      return SizedBox();
+                    },
+                  ),
+                  //--------------------------------
                   Expanded(
                     child:
                         //Ambil data user ----------------
@@ -83,7 +108,9 @@ class _customerMainState extends State<customerMain> {
                             title: Row(
                               children: [
                                 Expanded(child: Text(dsData['Name'])),
-                                Text("Rp. " + dsData['Price'],style: const TextStyle(fontWeight: FontWeight.bold))
+                                Text("Rp. " + dsData['Price'],
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.bold))
                               ],
                             ),
                             subtitle: Row(
@@ -94,17 +121,120 @@ class _customerMainState extends State<customerMain> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(dsData['Descriptions']),
-                                      Text("Stock: " + dsData['Stock'],style: const TextStyle(fontWeight: FontWeight.bold),)
+                                      Text(
+                                        "Stock: " + dsData['Stock'],
+                                        style: const TextStyle(
+                                            fontWeight: FontWeight.bold),
+                                      )
                                     ],
                                   ),
                                 ),
                                 ElevatedButton(
                                     onPressed: () {
-                                      //TAMBAHKAN KE KERANJANG
-                                      //Cek Stock (produk - 1)
-                                      //Snakcbar berhasil tambah di keranjang + Stock produk - 1
+                                      if (int.parse(currentUser.saldo) >=
+                                          int.parse(dsData['Price'])) {
+                                        if (int.parse(dsData['Stock']) <= 0) {
+                                          showDialog(
+                                              context: context,
+                                              builder: (context) => AlertDialog(
+                                                    title: const Text(
+                                                        "Gagal tambah ke keranjang"),
+                                                    content: const Text(
+                                                        "Stock produk habis!"),
+                                                    actions: [
+                                                      TextButton(
+                                                          onPressed: () {
+                                                            Navigator.of(
+                                                                    context)
+                                                                .pop();
+                                                          },
+                                                          child:
+                                                              const Text("OK"))
+                                                    ],
+                                                  ),
+                                              barrierDismissible: false);
+                                        } else {
+                                          //Check jika sdh ada
+                                          bool f = false;
+                                          Cart c = Cart(
+                                              Name: "",
+                                              Username: "",
+                                              Price: "0",
+                                              Stock: "0");
+                                          for (int i = 0;
+                                              i < currentCart.length;
+                                              i++) {
+                                            if ("${currentCart[i].Username}_${currentCart[i].Name}" ==
+                                                "${currentUser.username}_" +
+                                                    dsData['Name']) {
+                                              f = true;
+                                              c = Cart(
+                                                  Name: dsData['Name'],
+                                                  Username:
+                                                      currentUser.username,
+                                                  Price: dsData['Price'],
+                                                  Stock: (int.parse(
+                                                              currentCart[i]
+                                                                  .Stock) +
+                                                          1)
+                                                      .toString());
+                                              break;
+                                            }
+                                          }
+
+                                          if (f) {
+                                            //Tambah stock Cart
+                                            Database.editCart(editedCart: c);
+                                          } else {
+                                            //Buat Cart baru
+                                            Database.addCart(
+                                                newCart: Cart(
+                                                    Name: dsData['Name'],
+                                                    Username:
+                                                        currentUser.username,
+                                                    Price: dsData['Price'],
+                                                    Stock: "1"));
+                                          }
+
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(const SnackBar(
+                                                  content: Text(
+                                                      'Berhasil tambahkan ke keranjang!')));
+
+                                          int s = int.parse(dsData['Stock']);
+                                          s--;
+                                          Product p = Product(
+                                              Descriptions:
+                                                  dsData['Descriptions'],
+                                              Name: dsData['Name'],
+                                              PictureURL: dsData['PictureURL'],
+                                              Price: dsData['Price'],
+                                              Stock: s.toString());
+                                          Database.editProduct(
+                                              editedProduct: p);
+                                        }
+                                      } else {
+                                        showDialog(
+                                            context: context,
+                                            builder: (context) => AlertDialog(
+                                                  title: const Text(
+                                                      "Gagal tambah ke keranjang"),
+                                                  content: const Text(
+                                                      "Saldo tidak mencukupi!"),
+                                                  actions: [
+                                                    TextButton(
+                                                        onPressed: () {
+                                                          Navigator.of(context)
+                                                              .pop();
+                                                        },
+                                                        child: const Text("OK"))
+                                                  ],
+                                                ),
+                                            barrierDismissible: false);
+                                      }
                                     },
-                                    child: const Icon(Icons.shopping_cart_outlined))
+                                    child: const Icon(
+                                        Icons.shopping_cart_outlined))
                               ],
                             ),
                             leading: Image(
@@ -126,14 +256,33 @@ class _customerMainState extends State<customerMain> {
               const SizedBox(
                 height: 20,
               ),
-              ElevatedButton(
-                  onPressed: () {
-                    //HALAMAN customer_cart.dart
-                  },
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: const Size.fromHeight(40),
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                        onPressed: () {
+                          //HALAMAN customer_cart.dart
+                        },
+                        style: ElevatedButton.styleFrom(
+                          minimumSize: const Size.fromHeight(40),
+                        ),
+                        child: const Text("Keranjang Saya")),
                   ),
-                  child: const Text("Keranjang Saya")),
+                  const SizedBox(
+                    width: 20,
+                  ),
+                  Expanded(
+                    child: ElevatedButton(
+                        onPressed: () {
+                          //HALAMAN customer_status.dart
+                        },
+                        style: ElevatedButton.styleFrom(
+                          minimumSize: const Size.fromHeight(40),
+                        ),
+                        child: const Text("Status Transaksi")),
+                  ),
+                ],
+              ),
               const SizedBox(
                 height: 20,
               ),
@@ -144,16 +293,21 @@ class _customerMainState extends State<customerMain> {
                         onPressed: () {
                           //HALAMAN customer_topup.dart
                         },
-                        
                         child: const Text("TopUp Saldo")),
                   ),
-                  const SizedBox(width: 20,),
+                  const SizedBox(
+                    width: 20,
+                  ),
                   Expanded(
                     child: ElevatedButton(
                         onPressed: () {
-                          //HALAMAN customer_review.dart
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: ((context) {
+                            return customerReview(
+                              username: currentUser.username,
+                            );
+                          })));
                         },
-                        
                         child: const Text("Review Aplikasi")),
                   ),
                 ],
