@@ -42,7 +42,7 @@ class _customerReviewState extends State<customerReview> {
               TextField(
                 controller: _review,
                 decoration: const InputDecoration(
-                    labelText: "Review", border: OutlineInputBorder()),
+                    labelText: "Masukkan Review", border: OutlineInputBorder()),
               ),
               const SizedBox(
                 height: 20,
@@ -71,7 +71,19 @@ class _customerReviewState extends State<customerReview> {
                             ),
                         barrierDismissible: false);
                   },
-                  child: const Text("Kirim Review"))
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: const Size.fromHeight(40),
+                  ),
+                  child: const Text("Kirim Review")),
+              const Expanded(child: SizedBox()),
+              ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: const Size.fromHeight(40),
+                  ),
+                  child: const Text("Kembali")),
             ],
           ),
         ),

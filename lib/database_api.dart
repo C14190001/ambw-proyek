@@ -100,7 +100,7 @@ class Database {
 
   static Future<void> deleteCart({required Cart deletedCart}) async {
     DocumentReference dr =
-        productTable.doc("${deletedCart.Username}_${deletedCart.Name}");
+        CartTable.doc("${deletedCart.Username}_${deletedCart.Name}");
     await dr
         .delete()
         .whenComplete(() => print("Cart deleted!"))

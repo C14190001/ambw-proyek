@@ -1,4 +1,6 @@
+import 'package:ambw_proyek/customer_cart.dart';
 import 'package:ambw_proyek/customer_review.dart';
+import 'package:ambw_proyek/customer_topup.dart';
 import 'package:ambw_proyek/database_api.dart';
 import 'package:ambw_proyek/dataclass.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -261,7 +263,12 @@ class _customerMainState extends State<customerMain> {
                   Expanded(
                     child: ElevatedButton(
                         onPressed: () {
-                          //HALAMAN customer_cart.dart
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: ((context) {
+                            return customerCart(
+                              username: currentUser.username,
+                            );
+                          })));
                         },
                         style: ElevatedButton.styleFrom(
                           minimumSize: const Size.fromHeight(40),
@@ -291,7 +298,12 @@ class _customerMainState extends State<customerMain> {
                   Expanded(
                     child: ElevatedButton(
                         onPressed: () {
-                          //HALAMAN customer_topup.dart
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: ((context) {
+                            return customerTopup(
+                              username: currentUser.username,
+                            );
+                          })));
                         },
                         child: const Text("TopUp Saldo")),
                   ),
