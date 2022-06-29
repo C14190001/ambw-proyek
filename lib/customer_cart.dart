@@ -245,6 +245,20 @@ class _customerCartState extends State<customerCart> {
                                         },
                                         child: const Text("OK")),
                                   ]));
+                    } else if (totalHarga > int.parse(currentUser.saldo)) {
+                      showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                                title: const Text("Order Gagal"),
+                                content: const Text("Saldo tidak mencukupi!"),
+                                actions: [
+                                  TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: const Text("OK"))
+                                ],
+                              ));
                     } else {
                       showDialog(
                           context: context,
