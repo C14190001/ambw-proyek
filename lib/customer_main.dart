@@ -1,5 +1,6 @@
 import 'package:ambw_proyek/customer_cart.dart';
 import 'package:ambw_proyek/customer_review.dart';
+import 'package:ambw_proyek/customer_status.dart';
 import 'package:ambw_proyek/customer_topup.dart';
 import 'package:ambw_proyek/database_api.dart';
 import 'package:ambw_proyek/dataclass.dart';
@@ -282,6 +283,12 @@ class _customerMainState extends State<customerMain> {
                     child: ElevatedButton(
                         onPressed: () {
                           //HALAMAN customer_status.dart
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: ((context) {
+                            return customerStatus(
+                              username: currentUser.username,
+                            );
+                          })));
                         },
                         style: ElevatedButton.styleFrom(
                           minimumSize: const Size.fromHeight(40),

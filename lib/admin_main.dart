@@ -1,4 +1,6 @@
 import 'package:ambw_proyek/admin_daftarReview.dart';
+import 'package:ambw_proyek/admin_editProduk.dart';
+import 'package:ambw_proyek/admin_status.dart';
 import 'package:ambw_proyek/database_api.dart';
 import 'package:ambw_proyek/dataclass.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -13,7 +15,7 @@ class adminMain extends StatefulWidget {
 }
 
 class _adminMainState extends State<adminMain> {
-  int testProductTambah = 0;
+  //int testProductTambah = 0;
 
   void snackbarFromDialog(String Message) {
     Navigator.of(context).pop();
@@ -51,18 +53,23 @@ class _adminMainState extends State<adminMain> {
               ),
               ElevatedButton(
                   onPressed: () {
-                    testProductTambah++;
+                    //testProductTambah++;
 
-                    Database.addProduct(
-                        newProduct: Product(
-                            Descriptions: "Test Product ${testProductTambah}",
-                            Name: (testProductTambah).toString(),
-                            PictureURL:
-                                "https://12college.files.wordpress.com/2016/05/test-clip-art-cpa-school-test.png",
-                            Price: "1",
-                            Stock: "10"));
+                    // Database.addProduct(
+                    //     newProduct: Product(
+                    //         Descriptions: "Test Product ${testProductTambah}",
+                    //         Name: (testProductTambah).toString(),
+                    //         PictureURL:
+                    //             "https://12college.files.wordpress.com/2016/05/test-clip-art-cpa-school-test.png",
+                    //         Price: "1",
+                    //         Stock: "10"));
 
-                    //Halaman Tambah produk
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: ((context) {
+                      return adminEditProduk(
+                        username: widget.username,
+                      );
+                    })));
                   },
                   style: ElevatedButton.styleFrom(
                     minimumSize: const Size.fromHeight(40),
@@ -78,7 +85,7 @@ class _adminMainState extends State<adminMain> {
                   if (snapshots.hasError) {
                     return const Text("Gagal ambil data semua produk!");
                   } else if (snapshots.hasData) {
-                    testProductTambah = snapshots.data!.docs.length;
+                    //testProductTambah = snapshots.data!.docs.length;
 
                     return ListView.separated(
                         itemBuilder: ((context, index) {
@@ -112,6 +119,19 @@ class _adminMainState extends State<adminMain> {
                                 ElevatedButton(
                                     onPressed: () {
                                       //Halaman Edit Produk
+                                      Navigator.push(context, MaterialPageRoute(
+                                          builder: ((context) {
+                                        return adminEditProduk(
+                                          username: widget.username,
+                                          editP: Product(
+                                              Descriptions:
+                                                  dsData['Descriptions'],
+                                              Name: dsData['Name'],
+                                              PictureURL: dsData['PictureURL'],
+                                              Price: dsData['Price'],
+                                              Stock: dsData['Stock']),
+                                        );
+                                      })));
                                     },
                                     child: const Icon(Icons.edit)),
                                 const SizedBox(
@@ -173,6 +193,10 @@ class _adminMainState extends State<adminMain> {
               ElevatedButton(
                   onPressed: () {
                     //Halaman Daftar Transaksi
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: ((context) {
+                      return const adminStatus();
+                    })));
                   },
                   style: ElevatedButton.styleFrom(
                     minimumSize: const Size.fromHeight(40),
@@ -185,7 +209,7 @@ class _adminMainState extends State<adminMain> {
                   onPressed: () {
                     Navigator.push(context,
                         MaterialPageRoute(builder: ((context) {
-                      return adminReview();
+                      return const adminReview();
                     })));
                   },
                   style: ElevatedButton.styleFrom(

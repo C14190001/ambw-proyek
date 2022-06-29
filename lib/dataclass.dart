@@ -103,3 +103,27 @@ class Reviews {
     return Reviews(Review: json['Review'], Username: json['Username']);
   }
 }
+
+class Statuses {
+  final String Price;
+  final String ProductName;
+  final String Status;
+  final String Stock;
+  final String Username;
+
+  Statuses({
+    required this.Price,
+    required this.ProductName,
+    required this.Status,
+    required this.Stock,
+    required this.Username,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {"Price": Price, "ProductName": ProductName,"Status": Status,"Stock": Stock, "Username": Username};
+  }
+
+  factory Statuses.fromJson(Map<String, dynamic> json) {
+    return Statuses(Price: json['Price'], ProductName: json['ProductName'], Status: json['Status'], Stock: json['Stock'], Username: json['Username']);
+  }
+}

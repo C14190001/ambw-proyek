@@ -8,6 +8,8 @@ CollectionReference productTable =
 CollectionReference CartTable = FirebaseFirestore.instance.collection("Cart");
 CollectionReference reviewTable =
     FirebaseFirestore.instance.collection("Reviews");
+CollectionReference statusTable =
+    FirebaseFirestore.instance.collection("Status");
 
 class Database {
   //Users
@@ -132,6 +134,55 @@ class Database {
     await dr
         .delete()
         .whenComplete(() => print("Review deleted!"))
+        .catchError((e) => print(e));
+  }
+
+  //Status
+  static Stream<QuerySnapshot<Object?>> getAllStatusAdmin(String filter) {
+    if (filter=="") {
+      return statusTable.snapshots();
+    } else {
+      //Filter USER
+      return statusTable
+          .orderBy("Username")
+          .startAt([filter]).endAt([filter + '\uf8ff']).snapshots();
+    }
+  }
+
+  static Stream<QuerySnapshot<Object?>> getAllStatusCustomer(
+      {required String username, String filter = ""}) {
+    if (filter == "") {
+      return statusTable.where("Username", isEqualTo: username).snapshots();
+    } else {
+      //
+      // [ ERROR ]
+      // Hasilnya muncul sebentar lalu error.
+      //
+      //FILTER PRODUK
+      return statusTable
+          .orderBy("ProductName")
+          .startAt([filter])
+          .endAt([filter + '\uf8ff'])
+          .where("Username", isEqualTo: username)
+          .snapshots();
+    }
+  }
+
+  static Future<void> addStatus({required Statuses newStatus}) async {
+    DocumentReference dr =
+        statusTable.doc("${newStatus.Username}_${newStatus.ProductName}");
+    await dr
+        .set(newStatus.toJson())
+        .whenComplete(() => print("New Status created!"))
+        .catchError((e) => print(e));
+  }
+
+  static Future<void> editStatus({required Statuses editedStatus}) async {
+    DocumentReference dr =
+        statusTable.doc("${editedStatus.Username}_${editedStatus.ProductName}");
+    await dr
+        .update(editedStatus.toJson())
+        .whenComplete(() => print("Status data edited!"))
         .catchError((e) => print(e));
   }
 }
