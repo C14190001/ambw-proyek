@@ -80,6 +80,7 @@ class _MyAppState extends State<MyApp> {
             ),
             TextField(
               controller: _password,
+              obscureText: true,
               decoration: const InputDecoration(
                   labelText: "Password", border: OutlineInputBorder()),
             ),

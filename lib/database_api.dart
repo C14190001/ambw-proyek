@@ -186,4 +186,13 @@ class Database {
         .whenComplete(() => print("Status data edited!"))
         .catchError((e) => print(e));
   }
+
+  static Future<void> deleteStatus(
+      {required String Username, required String ProductName}) async {
+    DocumentReference dr = statusTable.doc("${Username}_$ProductName");
+    await dr
+        .delete()
+        .whenComplete(() => print("Status deleted!"))
+        .catchError((e) => print(e));
+  }
 }
