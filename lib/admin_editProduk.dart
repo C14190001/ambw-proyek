@@ -61,6 +61,7 @@ class _adminEditProdukState extends State<adminEditProduk> {
                       const Text("Nama produk:"),
                       TextField(
                         controller: _Name,
+                        enabled: _addProduct,
                         decoration:
                             const InputDecoration(border: OutlineInputBorder()),
                       ),

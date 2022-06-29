@@ -86,12 +86,12 @@ class _customerTopupState extends State<customerTopup> {
                                 TextButton(
                                     onPressed: () {
                                       Navigator.of(context).pop();
+                                      _topUp.text = "";
                                     },
                                     child: const Text("OK")),
                               ],
                             ),
                         barrierDismissible: false);
-                    _topUp.text = "";
                     setState(() {});
                   },
                   style: ElevatedButton.styleFrom(

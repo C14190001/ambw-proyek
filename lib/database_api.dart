@@ -60,6 +60,7 @@ class Database {
 
   static Future<void> editProduct({required Product editedProduct}) async {
     DocumentReference dr = productTable.doc(editedProduct.Name);
+
     await dr
         .update(editedProduct.toJson())
         .whenComplete(() => print("Product data edited!"))
@@ -139,7 +140,7 @@ class Database {
 
   //Status
   static Stream<QuerySnapshot<Object?>> getAllStatusAdmin(String filter) {
-    if (filter=="") {
+    if (filter == "") {
       return statusTable.snapshots();
     } else {
       //Filter USER

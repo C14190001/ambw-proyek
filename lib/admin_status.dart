@@ -17,6 +17,8 @@ class _adminStatusState extends State<adminStatus> {
     return Database.getAllStatusAdmin(_filter.text);
   }
 
+  void dropValueReselect(String newValue) {}
+
   @override
   void initState() {
     _filter.addListener(onSearch);
@@ -76,80 +78,88 @@ class _adminStatusState extends State<adminStatus> {
                             trailing: ElevatedButton(
                               onPressed: () {
                                 String dropValue = dsData['Status'];
+
                                 showDialog(
                                     context: context,
-                                    builder: (context) => AlertDialog(
-                                          title: const Text("Edit Status"),
-                                          content: Row(
-                                            children: [
-                                              const Expanded(
-                                                  child:
-                                                      Text("Status pesanan")),
-                                              DropdownButton(
-                                                  items: const [
-                                                    DropdownMenuItem(
-                                                      value: "Proccess",
-                                                      child: Text("Proccess"),
-                                                    ),
-                                                    DropdownMenuItem(
-                                                      value: "Shipping",
-                                                      child: Text("Shipping"),
-                                                    ),
-                                                    DropdownMenuItem(
-                                                      value: "Done",
-                                                      child: Text("Done"),
-                                                    ),
-                                                  ],
-                                                  value: dropValue,
-                                                  onChanged: (String? select) {
-                                                    dropValue = select!;
-                                                  })
+                                    builder: (context) => StatefulBuilder(
+                                            builder: (BuildContext context,
+                                                StateSetter setState) {
+                                          return AlertDialog(
+                                            title: const Text("Edit Status"),
+                                            content: Row(
+                                              children: [
+                                                const Expanded(
+                                                    child:
+                                                        Text("Status pesanan")),
+                                                DropdownButton(
+                                                    items: const [
+                                                      DropdownMenuItem(
+                                                        value: "Proccess",
+                                                        child: Text("Proccess"),
+                                                      ),
+                                                      DropdownMenuItem(
+                                                        value: "Shipping",
+                                                        child: Text("Shipping"),
+                                                      ),
+                                                      DropdownMenuItem(
+                                                        value: "Done",
+                                                        child: Text("Done"),
+                                                      ),
+                                                    ],
+                                                    value: dropValue,
+                                                    onChanged:
+                                                        (String? select) {
+                                                      setState(() {
+                                                        dropValue = select!;
+                                                      });
+                                                    })
+                                              ],
+                                            ),
+                                            actions: [
+                                              TextButton(
+                                                  onPressed: () {
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                  child: const Text("Batal")),
+                                              TextButton(
+                                                  onPressed: () {
+                                                    Navigator.of(context).pop();
+
+                                                    Database.editStatus(
+                                                        editedStatus: Statuses(
+                                                            Price:
+                                                                dsData['Price'],
+                                                            ProductName: dsData[
+                                                                'ProductName'],
+                                                            Status: dropValue,
+                                                            Stock:
+                                                                dsData['Stock'],
+                                                            Username: dsData[
+                                                                'Username']));
+
+                                                    showDialog(
+                                                        context: context,
+                                                        builder:
+                                                            (context) =>
+                                                                AlertDialog(
+                                                                  title: const Text(
+                                                                      "Edit Status berhasil!"),
+                                                                  actions: [
+                                                                    TextButton(
+                                                                        onPressed:
+                                                                            () {
+                                                                          Navigator.of(context)
+                                                                              .pop();
+                                                                        },
+                                                                        child: const Text(
+                                                                            "OK"))
+                                                                  ],
+                                                                ));
+                                                  },
+                                                  child: const Text("OK")),
                                             ],
-                                          ),
-                                          actions: [
-                                            TextButton(
-                                                onPressed: () {
-                                                  Navigator.of(context).pop();
-                                                },
-                                                child: const Text("Batal")),
-                                            TextButton(
-                                                onPressed: () {
-                                                  Navigator.of(context).pop();
-
-                                                  Database.editStatus(
-                                                      editedStatus: Statuses(
-                                                          Price:
-                                                              dsData['Price'],
-                                                          ProductName: dsData[
-                                                              'ProductName'],
-                                                          Status: dropValue,
-                                                          Stock:
-                                                              dsData['Stock'],
-                                                          Username: dsData[
-                                                              'Username']));
-
-                                                  showDialog(
-                                                      context: context,
-                                                      builder:
-                                                          (context) =>
-                                                              AlertDialog(
-                                                                title: const Text(
-                                                                    "Edit Status berhasil!"),
-                                                                actions: [
-                                                                  TextButton(
-                                                                      onPressed:
-                                                                          () {
-                                                                        Navigator.of(context)
-                                                                            .pop();
-                                                                      },
-                                                                      child: const Text(
-                                                                          "OK"))
-                                                                ],
-                                                              ));
-                                                },
-                                                child: const Text("OK")),
-                                          ],
-                                        ),
+                                          );
+                                        }),
                                     barrierDismissible: false);
                               },
                               child: const Icon(Icons.edit),
