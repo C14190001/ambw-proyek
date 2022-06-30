@@ -169,9 +169,14 @@ class Database {
     }
   }
 
-  static Future<void> addStatus({required Statuses newStatus}) async {
+  static Future<void> addStatus(
+      {required Statuses newStatus, String c = ""}) async {
     DocumentReference dr =
         statusTable.doc("${newStatus.Username}_${newStatus.ProductName}");
+    if (c != "") {
+      dr = statusTable.doc("${c}_${newStatus.Username}_${newStatus.ProductName}");
+    }
+
     await dr
         .set(newStatus.toJson())
         .whenComplete(() => print("New Status created!"))
@@ -188,8 +193,8 @@ class Database {
   }
 
   static Future<void> deleteStatus(
-      {required String Username, required String ProductName}) async {
-    DocumentReference dr = statusTable.doc("${Username}_$ProductName");
+      {required String id}) async {
+    DocumentReference dr = statusTable.doc(id);
     await dr
         .delete()
         .whenComplete(() => print("Status deleted!"))

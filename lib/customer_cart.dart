@@ -16,6 +16,7 @@ class _customerCartState extends State<customerCart> {
   Users currentUser = Users(admin: "", password: "", saldo: "0", username: "");
   List<Product> allProduct = [];
   List<Cart> allCart = [];
+  List<String> userStatus = [];
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +30,23 @@ class _customerCartState extends State<customerCart> {
           padding: const EdgeInsets.all(20),
           child: Column(
             children: [
+              //Ambil data nama ID Status pada User ---------------
+              StreamBuilder<QuerySnapshot>(
+                stream: Database.getAllStatusAdmin(currentUser.username),
+                builder: (context, snapshots) {
+                  if (snapshots.hasError) {
+                    print("Error getting ${currentUser.username} status..");
+                  } else if (snapshots.hasData) {
+                    print("Getting ${currentUser.username} status..");
+                    userStatus.clear();
+                    for (int i = 0; i < snapshots.data!.docs.length; i++) {
+                      DocumentSnapshot dsData = snapshots.data!.docs[i];
+                      userStatus.add(dsData.id);
+                    }
+                  }
+                  return const SizedBox();
+                },
+              ),
               //Ambil data semua produk -------------------------
               StreamBuilder<QuerySnapshot>(
                 stream: Database.getAllProducts(),
@@ -212,6 +230,7 @@ class _customerCartState extends State<customerCart> {
                     print("Error getting user ${widget.username}!");
                   } else if (snapshots.hasData && snapshots.data != null) {
                     DocumentSnapshot ds = snapshots.data!.docs[0];
+
                     currentUser = Users(
                         admin: ds['Admin'],
                         password: ds['Password'],
@@ -293,19 +312,100 @@ class _customerCartState extends State<customerCart> {
                                         //BUG: Kalau order item yang sama akan error karena pake
                                         //Database AddStatus, perlu tambahkan kode untuk cek jika
                                         //sudah ada pesanan sebelumnya. Kalau ada, maka buat dengan
-                                        //ID customerName_productName_1 (ditambah angka)
+                                        //ID 1_customerName_productName (ditambah angka)
+
+                                        //Fix sementara: Max 10 order dg user & produk sama
 
                                         for (int i = 0;
                                             i < allCart.length;
                                             i++) {
-                                          Database.addStatus(
-                                              newStatus: Statuses(
-                                                  Price: allCart[i].Price,
-                                                  ProductName: allCart[i].Name,
-                                                  Status: "Proccess",
-                                                  Stock: allCart[i].Stock,
-                                                  Username:
-                                                      currentUser.username));
+                                          bool exist = false;
+                                          int c = 0;
+
+                                          setState(() {
+                                            
+                                          });
+
+                                          print("CHECK EXIST");
+                                          for (int i = 0;
+                                              i < userStatus.length;
+                                              i++) {
+                                            print("CHECK 1");
+                                            if (int.tryParse(
+                                                      userStatus[i][0]) !=
+                                                  null) {
+                                              print("CHECK 1 TRUE");
+                                              if ("${allCart[i].Username}_${allCart[i].Name}" ==
+                                                  userStatus[i].substring(2)) {
+                                                exist = true;
+                                                break;
+                                              }
+                                            } else {
+                                              print("CHECK 1 FALSE");
+                                              if ("${allCart[i].Username}_${allCart[i].Name}" ==
+                                                  userStatus[i]) {
+                                                exist = true;
+                                                break;
+                                              }
+                                            }
+                                          }
+
+                                          if (exist) {
+                                            print("EXIST TRUE");
+                                            for (int i = 0;
+                                                i < userStatus.length;
+                                                i++) {
+                                              if (int.tryParse(
+                                                      userStatus[i][0]) !=
+                                                  null) {
+                                                if (int.parse(
+                                                        userStatus[i][0]) <=
+                                                    c) {
+                                                  c++;
+                                                }
+                                              }
+                                            }
+
+                                            if (c <= 9) {
+                                              Database.addStatus(
+                                                  newStatus: Statuses(
+                                                      Price: allCart[i].Price,
+                                                      ProductName:
+                                                          allCart[i].Name,
+                                                      Status: "Proccess",
+                                                      Stock: allCart[i].Stock,
+                                                      Username:
+                                                          currentUser.username),
+                                                  c: c.toString());
+                                            } else {
+                                              print(
+                                                  "ERROR: Melebihi maksimum order Username & Produk sama");
+                                            }
+                                          } else {
+                                            print("EXIST FALSE");
+                                            Database.addStatus(
+                                                newStatus: Statuses(
+                                                    Price: allCart[i].Price,
+                                                    ProductName:
+                                                        allCart[i].Name,
+                                                    Status: "Proccess",
+                                                    Stock: allCart[i].Stock,
+                                                    Username:
+                                                        currentUser.username));
+                                          }
+                                        }
+
+                                        for (int i = 0;
+                                            i < allCart.length;
+                                            i++) {
+                                          // Database.addStatus(
+                                          //     newStatus: Statuses(
+                                          //         Price: allCart[i].Price,
+                                          //         ProductName: allCart[i].Name,
+                                          //         Status: "Proccess",
+                                          //         Stock: allCart[i].Stock,
+                                          //         Username:
+                                          //             currentUser.username));
 
                                           Database.deleteCart(
                                               deletedCart: Cart(
