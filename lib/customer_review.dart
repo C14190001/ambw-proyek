@@ -13,7 +13,8 @@ class customerReview extends StatefulWidget {
 
 class _customerReviewState extends State<customerReview> {
   final TextEditingController _review = TextEditingController();
-  int c = 0;
+  //int c = 0;
+  List<String> c = [];
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +33,14 @@ class _customerReviewState extends State<customerReview> {
                   if (snapshots.hasError) {
                   } else if (snapshots.hasData) {
                     print("Get banyak review");
-                    c = snapshots.data!.docs.length;
+                    //c = snapshots.data!.docs.length;
+                    c.clear();
+                    for(int i=0;i<snapshots.data!.docs.length;i++){
+                    c.add(snapshots.data!.docs[i].id);
+                    }
+                    for(int i=0;i<c.length;i++){
+                      c[i] = c[i].substring(widget.username.length + 1);
+                    }
                   }
                   return SizedBox();
                 },
@@ -51,10 +59,17 @@ class _customerReviewState extends State<customerReview> {
                   onPressed: () {
                     //Tambah Review
 
+                    int max = 0;
+                    for(int i=0;i<c.length;i++){
+                      if(int.parse(c[i])>=max){
+                        max = int.parse(c[i]) +1;
+                      }
+                    }
+
                     Database.addReview(
                         newReview: Reviews(
                             Review: _review.text, Username: widget.username),
-                        c: c);
+                        c: (max - 1));
                     _review.text = "";
                     showDialog(
                         context: context,
