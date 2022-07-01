@@ -169,23 +169,18 @@ class Database {
     }
   }
 
-  static Future<void> addStatus(
-      {required Statuses newStatus, String c = ""}) async {
+  static Future<void> addStatus({required Statuses newStatus, required String c}) async {
     DocumentReference dr =
-        statusTable.doc("${newStatus.Username}_${newStatus.ProductName}");
-    if (c != "") {
-      dr = statusTable.doc("${c}_${newStatus.Username}_${newStatus.ProductName}");
-    }
-
+        statusTable.doc("${newStatus.Username}$c");
     await dr
         .set(newStatus.toJson())
         .whenComplete(() => print("New Status created!"))
         .catchError((e) => print(e));
   }
 
-  static Future<void> editStatus({required Statuses editedStatus}) async {
+  static Future<void> editStatus({required Statuses editedStatus, required String id}) async {
     DocumentReference dr =
-        statusTable.doc("${editedStatus.Username}_${editedStatus.ProductName}");
+        statusTable.doc(id);
     await dr
         .update(editedStatus.toJson())
         .whenComplete(() => print("Status data edited!"))

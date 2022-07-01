@@ -16,7 +16,7 @@ class _customerCartState extends State<customerCart> {
   Users currentUser = Users(admin: "", password: "", saldo: "0", username: "");
   List<Product> allProduct = [];
   List<Cart> allCart = [];
-  List<String> userStatus = [];
+  List<String> userStatusId = [];
 
   @override
   Widget build(BuildContext context) {
@@ -38,10 +38,10 @@ class _customerCartState extends State<customerCart> {
                     print("Error getting ${currentUser.username} status..");
                   } else if (snapshots.hasData) {
                     print("Getting ${currentUser.username} status..");
-                    userStatus.clear();
+                    userStatusId.clear();
                     for (int i = 0; i < snapshots.data!.docs.length; i++) {
                       DocumentSnapshot dsData = snapshots.data!.docs[i];
-                      userStatus.add(dsData.id);
+                      userStatusId.add(dsData.id);
                     }
                   }
                   return const SizedBox();
@@ -65,6 +65,27 @@ class _customerCartState extends State<customerCart> {
                           Price: dsData['Price'],
                           Stock: dsData['Stock']));
                     }
+                  }
+                  return const SizedBox();
+                },
+              ),
+              //-------------------------------------------------
+              //Ambil semua id status user ----------------------
+              StreamBuilder<QuerySnapshot>(
+                stream: Database.getAllStatusAdmin(""),
+                builder: (context, snapshots) {
+                  if (snapshots.hasError) {
+                    print("Error getting ${widget.username} status..");
+                  } else if (snapshots.hasData) {
+                    print("Getting ${widget.username} status....");
+                    userStatusId.clear();
+                    for (int i = 0; i < snapshots.data!.docs.length; i++) {
+                      DocumentSnapshot dsData = snapshots.data!.docs[i];
+                      if(dsData['Username']==widget.username){
+                      userStatusId.add(dsData.id);
+                      }
+                    }
+                    print("USER STATUS ID LENGTH: ${userStatusId.length}");
                   }
                   return const SizedBox();
                 },
@@ -316,88 +337,27 @@ class _customerCartState extends State<customerCart> {
 
                                         //Fix sementara: Max 10 order dg user & produk sama
 
+                                        int n =userStatusId.length + 1;
                                         for (int i = 0;
                                             i < allCart.length;
                                             i++) {
-                                          bool exist = false;
-                                          int c = 0;
-
+                                          
+                                          Database.addStatus(
+                                              newStatus: Statuses(
+                                                  Price: allCart[i].Price,
+                                                  ProductName: allCart[i].Name,
+                                                  Status: "Proccess",
+                                                  Stock: allCart[i].Stock,
+                                                  Username:
+                                                      currentUser.username),
+                                              c: n
+                                                  .toString());
+                                          
+                                          n++;
                                           setState(() {
                                             
                                           });
 
-                                          print("CHECK EXIST");
-                                          for (int i = 0;
-                                              i < userStatus.length;
-                                              i++) {
-                                            print("CHECK 1");
-                                            if (int.tryParse(
-                                                      userStatus[i][0]) !=
-                                                  null) {
-                                              print("CHECK 1 TRUE");
-                                              if ("${allCart[i].Username}_${allCart[i].Name}" ==
-                                                  userStatus[i].substring(2)) {
-                                                exist = true;
-                                                break;
-                                              }
-                                            } else {
-                                              print("CHECK 1 FALSE");
-                                              if ("${allCart[i].Username}_${allCart[i].Name}" ==
-                                                  userStatus[i]) {
-                                                exist = true;
-                                                break;
-                                              }
-                                            }
-                                          }
-
-                                          if (exist) {
-                                            print("EXIST TRUE");
-                                            for (int i = 0;
-                                                i < userStatus.length;
-                                                i++) {
-                                              if (int.tryParse(
-                                                      userStatus[i][0]) !=
-                                                  null) {
-                                                if (int.parse(
-                                                        userStatus[i][0]) <=
-                                                    c) {
-                                                  c++;
-                                                }
-                                              }
-                                            }
-
-                                            if (c <= 9) {
-                                              Database.addStatus(
-                                                  newStatus: Statuses(
-                                                      Price: allCart[i].Price,
-                                                      ProductName:
-                                                          allCart[i].Name,
-                                                      Status: "Proccess",
-                                                      Stock: allCart[i].Stock,
-                                                      Username:
-                                                          currentUser.username),
-                                                  c: c.toString());
-                                            } else {
-                                              print(
-                                                  "ERROR: Melebihi maksimum order Username & Produk sama");
-                                            }
-                                          } else {
-                                            print("EXIST FALSE");
-                                            Database.addStatus(
-                                                newStatus: Statuses(
-                                                    Price: allCart[i].Price,
-                                                    ProductName:
-                                                        allCart[i].Name,
-                                                    Status: "Proccess",
-                                                    Stock: allCart[i].Stock,
-                                                    Username:
-                                                        currentUser.username));
-                                          }
-                                        }
-
-                                        for (int i = 0;
-                                            i < allCart.length;
-                                            i++) {
                                           // Database.addStatus(
                                           //     newStatus: Statuses(
                                           //         Price: allCart[i].Price,
