@@ -169,18 +169,18 @@ class Database {
     }
   }
 
-  static Future<void> addStatus({required Statuses newStatus}) async {
+  static Future<void> addStatus({required Statuses newStatus, required String c}) async {
     DocumentReference dr =
-        statusTable.doc("${newStatus.Username}_${newStatus.ProductName}");
+        statusTable.doc("${newStatus.Username}$c");
     await dr
         .set(newStatus.toJson())
         .whenComplete(() => print("New Status created!"))
         .catchError((e) => print(e));
   }
 
-  static Future<void> editStatus({required Statuses editedStatus}) async {
+  static Future<void> editStatus({required Statuses editedStatus, required String id}) async {
     DocumentReference dr =
-        statusTable.doc("${editedStatus.Username}_${editedStatus.ProductName}");
+        statusTable.doc(id);
     await dr
         .update(editedStatus.toJson())
         .whenComplete(() => print("Status data edited!"))
@@ -188,8 +188,8 @@ class Database {
   }
 
   static Future<void> deleteStatus(
-      {required String Username, required String ProductName}) async {
-    DocumentReference dr = statusTable.doc("${Username}_$ProductName");
+      {required String id}) async {
+    DocumentReference dr = statusTable.doc(id);
     await dr
         .delete()
         .whenComplete(() => print("Status deleted!"))

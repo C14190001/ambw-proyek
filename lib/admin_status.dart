@@ -139,7 +139,20 @@ class _adminStatusState extends State<adminStatus> {
                                                               Stock: dsData[
                                                                   'Stock'],
                                                               Username: dsData[
-                                                                  'Username']));
+                                                                  'Username']),
+                                                          id: dsData.id);
+
+                                                      // Database.editStatus(
+                                                      //     editedStatus: Statuses(
+                                                      //         Price: dsData[
+                                                      //             'Price'],
+                                                      //         ProductName: dsData[
+                                                      //             'ProductName'],
+                                                      //         Status: dropValue,
+                                                      //         Stock: dsData[
+                                                      //             'Stock'],
+                                                      //         Username: dsData[
+                                                      //             'Username']));
 
                                                       showDialog(
                                                           context: context,
@@ -183,11 +196,15 @@ class _adminStatusState extends State<adminStatus> {
                                                     child: const Text("Batal")),
                                                 TextButton(
                                                     onPressed: () {
+                                                      // Database.deleteStatus(
+                                                      //     Username: dsData[
+                                                      //         'Username'],
+                                                      //     ProductName: dsData[
+                                                      //         'ProductName']);
+
                                                       Database.deleteStatus(
-                                                          Username: dsData[
-                                                              'Username'],
-                                                          ProductName: dsData[
-                                                              'ProductName']);
+                                                          id: dsData.id);
+
                                                       Navigator.of(context)
                                                           .pop();
                                                     },
