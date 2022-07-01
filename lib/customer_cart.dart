@@ -81,8 +81,8 @@ class _customerCartState extends State<customerCart> {
                     userStatusId.clear();
                     for (int i = 0; i < snapshots.data!.docs.length; i++) {
                       DocumentSnapshot dsData = snapshots.data!.docs[i];
-                      if(dsData['Username']==widget.username){
-                      userStatusId.add(dsData.id);
+                      if (dsData['Username'] == widget.username) {
+                        userStatusId.add(dsData.id);
                       }
                     }
                     print("USER STATUS ID LENGTH: ${userStatusId.length}");
@@ -325,23 +325,21 @@ class _customerCartState extends State<customerCart> {
                                                     currentUser.username));
 
                                         //-----------------------------------------------------------
-                                        //Pindah semua pesanan ke Status
-                                        //Data CART ada di allCart (List)
-                                        //Status add semua yg ada di Cart
-                                        //Loop FOR database.deleteCart dg data CART per index
+                                        int n = 1;
+                                        for (int i = 0;
+                                            i < userStatusId.length;
+                                            i++) {
+                                          String x = userStatusId[i].substring(
+                                              widget.username.length);
+                                          print(x);
+                                          if (int.parse(x) >= n) {
+                                            n = int.parse(x) + 1;
+                                          }
+                                        }
 
-                                        //BUG: Kalau order item yang sama akan error karena pake
-                                        //Database AddStatus, perlu tambahkan kode untuk cek jika
-                                        //sudah ada pesanan sebelumnya. Kalau ada, maka buat dengan
-                                        //ID 1_customerName_productName (ditambah angka)
-
-                                        //Fix sementara: Max 10 order dg user & produk sama
-
-                                        int n =userStatusId.length + 1;
                                         for (int i = 0;
                                             i < allCart.length;
                                             i++) {
-                                          
                                           Database.addStatus(
                                               newStatus: Statuses(
                                                   Price: allCart[i].Price,
@@ -350,23 +348,10 @@ class _customerCartState extends State<customerCart> {
                                                   Stock: allCart[i].Stock,
                                                   Username:
                                                       currentUser.username),
-                                              c: n
-                                                  .toString());
-                                          
+                                              c: n.toString());
+
                                           n++;
-                                          setState(() {
-                                            
-                                          });
-
-                                          // Database.addStatus(
-                                          //     newStatus: Statuses(
-                                          //         Price: allCart[i].Price,
-                                          //         ProductName: allCart[i].Name,
-                                          //         Status: "Proccess",
-                                          //         Stock: allCart[i].Stock,
-                                          //         Username:
-                                          //             currentUser.username));
-
+                                          setState(() {});
                                           Database.deleteCart(
                                               deletedCart: Cart(
                                                   Name: allCart[i].Name,

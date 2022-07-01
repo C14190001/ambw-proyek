@@ -142,18 +142,6 @@ class _adminStatusState extends State<adminStatus> {
                                                                   'Username']),
                                                           id: dsData.id);
 
-                                                      // Database.editStatus(
-                                                      //     editedStatus: Statuses(
-                                                      //         Price: dsData[
-                                                      //             'Price'],
-                                                      //         ProductName: dsData[
-                                                      //             'ProductName'],
-                                                      //         Status: dropValue,
-                                                      //         Stock: dsData[
-                                                      //             'Stock'],
-                                                      //         Username: dsData[
-                                                      //             'Username']));
-
                                                       showDialog(
                                                           context: context,
                                                           builder:
@@ -196,12 +184,6 @@ class _adminStatusState extends State<adminStatus> {
                                                     child: const Text("Batal")),
                                                 TextButton(
                                                     onPressed: () {
-                                                      // Database.deleteStatus(
-                                                      //     Username: dsData[
-                                                      //         'Username'],
-                                                      //     ProductName: dsData[
-                                                      //         'ProductName']);
-
                                                       Database.deleteStatus(
                                                           id: dsData.id);
 
